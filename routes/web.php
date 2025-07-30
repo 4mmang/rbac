@@ -14,7 +14,7 @@ Route::get('/dashboard', function(){
         return "unauthorized";
     }
     $user = Auth::user();
-    if ($user->isAbleTo('manage user')) {
+    if ($user->isAbleTo('view user')) {
         return "you can  access manage role";
     }
 

@@ -39,18 +39,17 @@ class RolesAndPermissionsSeeder extends Seeder
             }
             $getSuperAdminRole = Role::where('name', 'super admin')->first();
 
-            // here roles() method will check superadmin user have a superadmin role or not.
             $superAdmin->roles()->attach($getSuperAdminRole);
         }
 
         $superAdminDefaultPermission = [
             'dashboard' => ['view dashboard'],
-            'role' => ['manage role', 'create role', 'edit role', 'delete role'],
+            'role' => ['view role', 'create role', 'edit role', 'delete role'],
         ];
 
         $adminPermission = [
             'dashboard' => ['view dashboard'],
-            'user' => ['manage user', 'create user', 'edit user', 'delete user'],
+            'user' => ['view user', 'create user', 'edit user', 'delete user'],
         ];
 
         // Merge both arrays
