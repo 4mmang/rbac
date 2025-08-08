@@ -45,6 +45,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdminDefaultPermission = [
             'dashboard' => ['view dashboard'],
             'role' => ['view role', 'create role', 'edit role', 'delete role'],
+            'permission' => ['view permission', 'create permission', 'edit permission', 'delete permission'],
+            'user' => ['view user', 'create user', 'edit user', 'delete user'],
         ];
 
         $adminPermission = [
