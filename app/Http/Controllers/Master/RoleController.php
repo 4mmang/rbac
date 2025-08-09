@@ -38,4 +38,23 @@ class RoleController extends Controller
 
         return redirect()->back()->with('error', 'You do not have permission to create roles.');
     }
+
+    public function update(Request $request, Role $role)
+    {
+        $user = Auth::user();
+        if ($user->isAbleTo('edit role') && $user->type === 'superadmin') {
+            $request->validate([
+                'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            ]);
+
+            $role->update([
+                'name' => strtolower($request->name),
+                'updated_by' => $user->id,
+            ]);
+
+            return redirect()->back()->with('success', 'Role updated successfully.');
+        }
+
+        return redirect()->back()->with('error', 'You do not have permission to edit roles.');
+    }
 }

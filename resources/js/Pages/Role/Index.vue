@@ -13,25 +13,54 @@
     import InputLabel from '@/Components/InputLabel.vue';
     import InputError from '@/Components/InputError.vue';
     import PrimaryButton from '@/Components/PrimaryButton.vue';
+    import {
+        route
+    } from 'ziggy-js';
 
-    const showModal = ref(false);   
+    const showModal = ref(false);
+    const modalMode = ref('create'); // 'create' or 'edit'
+    const editingId = ref(null); // To store the ID of the role being edited
+
     const form = useForm({
         name: ''
     });
 
+    const openCreateModal = () => {
+        showModal.value = true;
+        modalMode.value = 'create';
+        form.reset();
+    };
+
+    const openEditModal = (role) => {
+        showModal.value = true;
+        modalMode.value = 'edit';
+        editingId.value = role.id;
+        form.name = role.name; // Populate the form with the role's current name
+    };
+
     const submit = () => {
-        form.post(route('role.store'), {
-            onSuccess: () => {
-                showModal.value = false;
-                form.reset();
-            }
-        });
+        if (modalMode.value === 'edit') {
+            form.put(route('role.update', editingId.value), {
+                onSuccess: () => {
+                    showModal.value = false;
+                    form.reset();
+                }
+            });
+            return;
+        } else if (modalMode.value === 'create') {
+            form.post(route('role.store'), {
+                onSuccess: () => {
+                    showModal.value = false;
+                    form.reset();
+                }
+            });
+        }
     };
 </script>
 <template>
     <App>
         <div class="container p-6 shadow-lg py-8">
-            <button v-if="$page.props.auth.permissions.includes('create role')" @click="showModal = true"
+            <button v-if="$page.props.auth.permissions.includes('create role')" @click="openCreateModal"
                 class="inline-block mb-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 Create New Role
             </button>
@@ -46,18 +75,19 @@
 
                     <tbody class="divide-y divide-gray-200" v-for="role in $page.props.roles">
                         <tr class="*:text-gray-900 *:first:font-medium text-center">
-                            <td class="px-3 py-2 whitespace-nowrap">{{ role.name }}</td>
+                            <td class="px-3 py-2 whitespace-nowrap">{{ role . name }}</td>
                             <td class="px-3 py-2 whitespace-nowrap flex gap-2 justify-center">
-                                <Link v-if="$page.props.auth.permissions.includes('edit role')" href="/role/create"
+                                <button v-if="$page.props.auth.permissions.includes('edit role')"
+                                    @click="openEditModal(role)"
                                     class="inline-block bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600">
-                                Edit
-                                </Link>
+                                    Edit
+                                </button>
                                 <Link v-if="$page.props.auth.permissions.includes('delete role')" href="/role/create"
                                     class="inline-block bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
                                 Delete
                                 </Link>
                                 <Link v-if="$page.props.auth.permissions.includes('edit permission')"
-                                    href="/role/create"
+                                    :href="route('permission.show', { id: role.id })"
                                     class="inline-block bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
                                 Permission
                                 </Link>
@@ -69,7 +99,6 @@
         </div>
     </App>
     <Modal :show="showModal" @close="showModal = false" maxWidth="md">
-
         <div class="p-6">
             <h2 class="text-lg font-semibold mb-4">Create New Role</h2>
             <form @submit.prevent="submit">
@@ -83,7 +112,7 @@
                 <div class="flex justify-end">
                     <PrimaryButton class="mt-2 px-5 py-3" :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing">
-                        Create Role
+                        {{ modalMode === 'edit' ? 'Update Role' : 'Create Role' }}
                     </PrimaryButton>
                 </div>
             </form>

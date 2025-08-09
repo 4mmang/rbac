@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia; 
@@ -21,7 +22,8 @@ Route::prefix('/master')
     }); 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 Route::resource('/role', RoleController::class)->middleware('auth');
-    
+Route::resource('/permission', PermissionController::class)->except('index')->middleware('auth');
+
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::get('/dashboard', function(){
 //     if (!Auth::check()) {
