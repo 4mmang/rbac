@@ -86,7 +86,7 @@
                                     class="inline-block bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
                                 Delete
                                 </Link>
-                                <Link v-if="$page.props.auth.permissions.includes('edit permission')"
+                                <Link v-if="$page.props.auth.permissions.includes('edit role')"
                                     :href="route('permission.show', { id: role.id })"
                                     class="inline-block bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
                                 Permission

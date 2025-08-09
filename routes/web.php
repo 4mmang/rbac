@@ -21,18 +21,5 @@ Route::prefix('/master')
         Route::resource('role', RoleController::class);
     }); 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
-Route::resource('/role', RoleController::class)->middleware('auth');
-Route::resource('/permission', PermissionController::class)->except('index')->middleware('auth');
-
-// Route::post('/login', [AuthController::class, 'login']);
-// Route::get('/dashboard', function(){
-//     if (!Auth::check()) {
-//         return "unauthorized";
-//     }
-//     $user = Auth::user();
-//     if ($user->isAbleTo('view user')) {
-//         return "you can  access manage role";
-//     }
-
-//     return "forbidden";
-// });
+Route::resource('/role', RoleController::class)->except(['create', 'show'])->middleware('auth');
+Route::resource('/permission', PermissionController::class)->except('index')->middleware('auth'); 

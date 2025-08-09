@@ -51,9 +51,34 @@
         });
     }
 
+    let permissionId = null;
+    let roleId = null;
+    let status = true
+    let all = false;
+
     function toggleAll(scope, checked) {
+        
         groupedPermissions.value[scope].forEach(perm => {
             selectedPermissions[perm.id] = checked;
+        });
+
+        this.roleId = props.role.id;
+        this.status = checked;
+        this.all = true;
+
+        router.put('permission.store', {
+            role_id: props.role.id,
+            status: status,
+            all: all,
+            scope: scope
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log(`All permissions for ${scope} updated successfully`);
+            },
+            onError: (error) => {
+                console.error(`Error updating permissions for ${scope}:`, error);
+            }
         });
     }
 
@@ -61,11 +86,9 @@
         return groupedPermissions.value[scope].every(perm => selectedPermissions[perm.id]);
     }
 
-    let permissionId = null;
-    let roleId = null;
-    let status = true
 
     function savePermissions(perm) {
+        this.all = false;
         if (selectedPermissions[perm.id]) {
             this.permissionId = perm.id;
             this.roleId = props.role.id;
@@ -74,12 +97,13 @@
             this.permissionId = perm.id;
             this.roleId = props.role.id;
             this.status = false;
-        }
+        } 
 
         router.put('permission.store', {
             permission_id: permissionId,
             role_id: roleId,
-            status: status
+            status: status,
+            all: all
         }, {
             preserveScroll: true,
             onSuccess: () => {
@@ -89,7 +113,7 @@
                 console.error('Error updating permission:', error);
             }
         });
-    }
+    } 
 </script>
 <template>
     <App>

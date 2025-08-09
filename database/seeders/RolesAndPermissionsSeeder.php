@@ -30,12 +30,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
             $superAdminRole = Role::where('name', 'super admin')->first();
             if (empty($superAdminRole)) {
-                $superAdminRole  = Role::create(
-                    [
-                        'name' => 'super admin',
-                        'created_by' => 0,
-                    ]
-                );
+                $superAdminRole = Role::create([
+                    'name' => 'super admin',
+                    'created_by' => 0,
+                ]);
             }
             $getSuperAdminRole = Role::where('name', 'super admin')->first();
 
@@ -45,7 +43,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdminDefaultPermission = [
             'dashboard' => ['view dashboard'],
             'role' => ['view role', 'create role', 'edit role', 'delete role'],
-            'permission' => ['view permission', 'create permission', 'edit permission', 'delete permission'],
             'user' => ['view user', 'create user', 'edit user', 'delete user'],
         ];
 
@@ -75,8 +72,8 @@ class RolesAndPermissionsSeeder extends Seeder
                         'scope' => $scope,
                         'created_by' => $superAdmin->id,
                         'created_at' => now(),
-                        'updated_at' => now()
-                    ]
+                        'updated_at' => now(),
+                    ],
                 );
             }
         }
@@ -94,6 +91,13 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         }
 
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('12345678'),
+            'type' => 'admin',
+            'created_by' => $superAdmin->id,
+        ]);
 
         $role = Role::where('name', 'admin')->first();
         if (empty($role)) {
@@ -101,6 +105,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'admin',
                 'created_by' => $superAdmin->id,
             ]);
+
+            $admin->roles()->attach($role);
         }
 
         foreach ($adminPermission as $scope => $permissionArray) {

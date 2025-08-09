@@ -12,8 +12,13 @@ class RoleController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->isAbleTo('view role') && $user->type === 'superadmin') {
+        if ($user->isAbleTo('view role')) {
             $roles = Role::where('name', '!=', 'super admin')->get();
+            if ($user->type !== 'superadmin') {
+                $roles = $roles->filter(function ($role) use ($user) {
+                    return $role->created_by === $user->id;
+                });
+            }
             return inertia('Role/Index', [
                 'roles' => $roles,
             ]);
@@ -23,7 +28,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if ($user->isAbleTo('create role') && $user->type === 'superadmin') {
+        if ($user->isAbleTo('create role')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:roles,name',
             ]);
@@ -42,7 +47,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $user = Auth::user();
-        if ($user->isAbleTo('edit role') && $user->type === 'superadmin') {
+        if ($user->isAbleTo('edit role')) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             ]);
